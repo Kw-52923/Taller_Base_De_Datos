@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- <title>Sistema de Biblioteca Simple - Taller SQL</title> -->
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            overflow: hidden;
+        }
+
+        .presentation-container {
+            width: 100vw;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide {
+            background: white;
+            width: 90%;
+            max-width: 1000px;
+            min-height: 80vh;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+            padding: 40px;
+            display: none;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        .slide.active {
+            display: block;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h1 {
+            color: #4a5568;
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            text-align: center;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 15px;
+        }
+
+        h2 {
+            color: #2d3748;
+            font-size: 2em;
+            margin-bottom: 15px;
+            text-align: center;
+            border-bottom: 2px solid #a0aec0;
+            padding-bottom: 10px;
+        }
+
+        h3 {
+            color: #4a5568;
+            font-size: 1.5em;
+            margin-bottom: 10px;
+            margin-top: 20px;
+        }
+
+        .content {
+            font-size: 1.1em;
+            line-height: 1.6;
+        }
+
+        ul {
+            margin: 15px 0 15px 30px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            margin: 15px 0;
+            overflow-x: auto;
+            font-size: 0.9em;
+            border-left: 4px solid #667eea;
+            line-height: 1.8;
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin: 20px 0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        th {
+            background: #4a5568;
+            color: white;
+            font-weight: bold;
+        }
+
+        tr:hover {
+            background: #f7fafc;
+        }
+
+        .navigation {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 15px;
+            z-index: 1000;
+        }
+
+        .nav-btn {
+            padding: 12px 20px;
+            background: #4a5568;
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+
+        .nav-btn:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+        }
+
+        .nav-btn:disabled {
+            background: #a0aec0;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .slide-counter {
+            position: fixed;
+            top: 30px;
+            right: 30px;
+            background: rgba(255,255,255,0.9);
+            padding: 10px 20px;
+            border-radius: 20px;
+            font-weight: bold;
+            color: #4a5568;
+            backdrop-filter: blur(10px);
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, #a0aec0 0%, #a0aec0 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 0.2em;
+            background-position: 0 88%;
+            transition: background-size 0.25s ease-in;
+        }
+
+        .timeline {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+
+        .timeline-item {
+            display: flex;
+            margin: 15px 0;
+            align-items: center;
+        }
+
+        .time {
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            margin-right: 15px;
+            font-weight: bold;
+            min-width: 120px;
+            text-align: center;
+        }
+
+        .entity-card {
+            background: linear-gradient(135deg, #f7fafc 0%, #edf2f7 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin: 15px 0;
+            border-left: 4px solid #667eea;
+        }
+    </style>
+</head>
+<body>
+    <div class="presentation-container">
+        <!-- Slide 1: Título -->
+        <div class="slide active">
+            <!-- <h1>🏛️ Sistema de Biblioteca Simple</h1> -->
+            <div class="content">
+                <div style="text-align: center; margin: 40px 0; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                    <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 40px; border-radius: 20px; box-shadow: 0 15px 35px rgba(0,0,0,0.1); margin-bottom: 30px; transform: perspective(1000px) rotateX(5deg); animation: titleFloat 3s ease-in-out infinite;">
+                        <h1 style="font-size: 3em; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.3); border: none; color: white;">
+                            ✨ ¡Bienvenidos! ✨
+                        </h1>
+                        <h2 style="border: none; color: #f1f5f9; font-size: 2.2em; margin-bottom: 10px;">
+                            🎯 Taller Práctico de SQL 🎯
+                        </h2>
+                        <p style="font-size: 1.4em; margin-top: 15px; opacity: 0.9;">
+                            🏛️ Sistema de Biblioteca Simple 🏛️
+                        </p>
+                    </div>
+                    
+                    <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 25px 40px; border-radius: 50px; box-shadow: 0 10px 25px rgba(72,187,120,0.3); animation: instructorBounce 2s ease-in-out infinite alternate;">
+                        <h3 style="font-size: 1.8em; margin: 0; color: white;">
+                            👨‍💻 Instructores: <span style="font-weight: bold; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">Maxi & Keila</span> 👩‍💻
+                        </h3>
+                    </div>
+                    
+                    <div style="margin-top: 30px; font-size: 1.3em; color: #4a5568; animation: sparkle 2.5s ease-in-out infinite;">
+                        🚀 ¡Prepárate para una aventura SQL increíble! 🚀
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes titleFloat {
+                0%, 100% { transform: perspective(1000px) rotateX(5deg) translateY(0px); }
+                50% { transform: perspective(1000px) rotateX(5deg) translateY(-10px); }
+            }
+            
+            @keyframes instructorBounce {
+                0% { transform: scale(1); }
+                100% { transform: scale(1.05); }
+            }
+            
+            @keyframes sparkle {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.7; }
+            }
+        </style>
+
+        <!-- Slide 2: Objetivos -->
+        <div class="slide">
+            <h2>🎯 Objetivos del Taller</h2>
+            <div class="content">
+                <div class="entity-card">
+                    <h3>🎓 Conocimientos a Consolidar:</h3>
+                    <ul>
+                        <li><strong>Sentencias fundamentales:</strong> CREATE, INSERT, SELECT, UPDATE, DELETE</li>
+                        <li><strong>Relaciones</strong> entre tablas/entidades.</li>
+                        <li><strong>Operaciones intermedias:</strong> JOIN, GROUP BY, WHERE</li>
+                    </ul>
+                </div>
+                
+               
+
+                <div class="entity-card" style="border-left-color: #ed8936;">
+                    <h3>🌐 Herramienta de Trabajo</h3>
+                    <p><strong>SQL Online:</strong> <a href="https://sqliteonline.com/" target="_blank" style="color: #667eea;">https://sqliteonline.com/</a></p>
+                    <p style="margin-top: 10px; color: #718096;">Opción "Learn and Share SQL" - No requiere instalación</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 3: Modelo de Datos -->
+        <div class="slide">
+            <h2>🏗️ Modelo de Datos - 4 Tablas Relacionadas</h2>
+            <div class="content">
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;">
+                    <div class="entity-card">
+                        <h3>👥 USUARIOS</h3>
+                        <ul>
+                            <li>ID Usuario (PK)</li>
+                            <li>Nombre</li>
+                            <li>Email</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="entity-card">
+                        <h3>✍️ AUTORES</h3>
+                        <ul>
+                            <li>ID Autor (PK)</li>
+                            <li>Nombre Autor</li>
+                            <li>País Origen</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="entity-card">
+                        <h3>📚 LIBROS</h3>
+                        <ul>
+                            <li>ID Libro (PK)</li>
+                            <li>Título</li>
+                            <li>ID Autor (FK)</li>
+                            <li>Año Publicación</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="entity-card">
+                        <h3>📋 PRÉSTAMOS</h3>
+                        <ul>
+                            <li>ID Préstamo (PK)</li>
+                            <li>ID Usuario (FK)</li>
+                            <li>ID Libro (FK)</li>
+                            <li>Fecha Préstamo</li>
+                            <li>Fecha Devolución</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Slide 4: CREATE TABLE - Usuarios y Autores -->
+        <div class="slide">
+            <h2>💻 Código SQL - Crear Tablas (Parte 1)</h2>
+            <div class="content">
+                <h3>👥 Crear tabla USUARIOS:</h3>
+                <div class="code-block">CREATE TABLE usuarios (
+    <br>id_usuario INT PRIMARY KEY,
+    <br>nombre VARCHAR(50),
+    <br>email VARCHAR(100)
+);</div>
+
+                <h3>✍️ Crear tabla AUTORES:</h3>
+                <div class="code-block">CREATE TABLE autores (
+    <br>id_autor INT PRIMARY KEY,
+    <br>nombre_autor VARCHAR(50),
+    <br>pais_origen VARCHAR(50)
+);</div>
+            </div>
+        </div>
+
+        <!-- Slide 5: CREATE TABLE - Libros y Préstamos -->
+        <div class="slide">
+            <h2>💻 Código SQL - Crear Tablas (Parte 2)</h2>
+            <div class="content">
+                <h3>📚 Crear tabla LIBROS:</h3>
+                <p style="margin-bottom: 25px;"><strong>Obs:</strong> En la creación de esta tabla se verá las distintas formas de definir los primary y foreign key, que son a nivel de columna y a nivel de tabla.</p>
+                
+                <div style="margin-bottom: 20px;">
+                    <p style="font-weight: bold; margin-bottom: 10px;">Forma 1: FK a nivel de tabla</p>
+                    <div class="code-block">CREATE TABLE libros (
+    <br>id_libro INT PRIMARY KEY,
+    <br>titulo VARCHAR(100),
+    <br>id_autor INT,
+    <br>año_publicacion INT,
+    <br>CONSTRAINT nombre FOREIGN KEY (id_autor) REFERENCES autores(id_autor)
+);</div>
+                </div>
+
+                <div style="margin-bottom: 20px;">
+                    <p style="font-weight: bold; margin-bottom: 10px;">Forma 2: FK a nivel de columna</p>
+                    <div class="code-block">CREATE TABLE libros (
+                        <br>id_libro INT PRIMARY KEY,
+                        <br>titulo VARCHAR(100),
+                        <br>id_autor INT REFERENCES autores(id_autor),
+                        <br>año_publicacion INT
+                    );</div>
+                </div>
+
+ 
+                
+            </div>
+        </div>
+        <div class="slide">
+                <div style="margin-bottom: 20px;">
+                    <p style="font-weight: bold; margin-bottom: 10px;">Forma 3: PK y FK a nivel de tabla</p>
+                        <div class="code-block">CREATE TABLE libros (
+                            <br>id_libro INT,
+                            <br>titulo VARCHAR(100),
+                            <br>id_autor INT,
+                            <br>año_publicacion INT,
+                            <br>CONSTRAINT nombre PRIMARY KEY (id_libro),
+                            <br>CONSTRAINT nombre FOREIGN KEY (id_autor) REFERENCES autores(id_autor)
+                        );</div>
+                </div>
+
+             <h3>📋 Crear tabla PRÉSTAMOS:</h3>
+                <div class="code-block">CREATE TABLE prestamos (
+    <br>id_prestamo INT PRIMARY KEY,
+    <br>id_usuario INT,
+    <br>id_libro INT,
+    <br>fecha_prestamo DATE,
+    <br>fecha_devolucion DATE,
+    <br>CONSTRAINT nombre FOREIGN KEY (id_usuario) REFERENCES usuarios(id_usuario),
+    <br>CONSTRAINT nombre FOREIGN KEY (id_libro) REFERENCES libros(id_libro)
+);</div>
+
+        </div>
+
+       
+
+
+        <!-- Slide 6: Tablas Usuarios y Autores -->
+        <div class="slide">
+            <h2>👥 Tabla USUARIOS</h2>
+            <div class="content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Usuario</th>
+                                <th>Nombre</th>
+                                <th>Email</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Ana Gómez</td>
+                                <td>ana@example.com</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Luis Pérez</td>
+                                <td>luis@example.com</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>María Torres</td>
+                                <td>maria@example.com</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>✍️ Tabla AUTORES</h2>
+                <div class="content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Autor</th>
+                                    <th>Nombre Autor</th>
+                                    <th>País Origen</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>Gabriel García Márquez</td>
+                                    <td>Colombia</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>Jane Austen</td>
+                                    <td>Reino Unido</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>Haruki Murakami</td>
+                                    <td>Japón</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Slide 6: Tablas Libros y Préstamos -->
+        <div class="slide">
+            <h2>📚 Tabla LIBROS</h2>
+            <div class="content">
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>ID Libro</th>
+                                <th>Título</th>
+                                <th>ID Autor</th>
+                                <th>Año Publicación</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Cien años de soledad</td>
+                                <td>1</td>
+                                <td>1967</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Orgullo y prejuicio</td>
+                                <td>2</td>
+                                <td>1813</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Tokio Blues</td>
+                                <td>3</td>
+                                <td>1987</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h2>📋 Tabla PRÉSTAMOS</h2>
+                <div class="content">
+                    <div class="table-container">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID Préstamo</th>
+                                    <th>ID Usuario</th>
+                                    <th>ID Libro</th>
+                                    <th>Fecha Préstamo</th>
+                                    <th>Fecha Devolución</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>1</td>
+                                    <td>2025-07-10</td>
+                                    <td>2025-07-20</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>2</td>
+                                    <td>2025-07-15</td>
+                                    <td>2025-07-25</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>3</td>
+                                    <td>3</td>
+                                    <td>2025-07-18</td>
+                                    <td>2025-07-28</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+ <!-- Slide 7: Inserción de Datos - Usuarios y Autores -->
+        <div class="slide">
+            <h2>📊 Inserción de Datos - Parte 1</h2>
+            <div class="content">
+                <h3>👥 Insertar datos en usuarios</h3>
+                <div class="code-block">INSERT INTO usuarios VALUES (1, 'Ana Gómez', 'ana@example.com');
+<br>INSERT INTO usuarios VALUES (2,'Luis Pérez','luis@example.com');
+<br>INSERT INTO usuarios VALUES (3,'María Torres','maria@example.com');
+</div>
+
+                <h3>✍️ Insertar datos en autores</h3>
+                <div class="code-block">INSERT INTO autores VALUES (1,'Gabriel García Márquez','Colombia');
+<br>INSERT INTO autores VALUES (2,'Jane Austen','Reino Unido');
+<br>INSERT INTO autores VALUES (3,'Haruki Murakami','Japón');</div>
+            </div>
+        </div>
+        
+        <!-- Slide 8: Inserción de Datos - Libros y Préstamos -->
+        <div class="slide">
+            <h2>📊 Inserción de Datos - Parte 2</h2>
+            <div class="content">
+                <h3>📚 Insertar datos en libros</h3>
+                <div class="code-block">INSERT INTO libros VALUES (1,'Cien años de soledad',1,1967);
+<br>INSERT INTO libros VALUES (2,'Orgullo y prejuicio',2,1813);
+<br>INSERT INTO libros VALUES (3,'Tokio Blues',3,1987);</div>
+
+                <h3>📋 Insertar datos en préstamos</h3>
+                <div class="code-block">INSERT INTO prestamos VALUES (1,1,1,'2025-07-10','2025-07-20');
+<br>INSERT INTO prestamos VALUES (2,2,2,'2025-07-15','2025-07-25');
+<br>INSERT INTO prestamos VALUES (3,3,3,'2025-07-18','2025-07-28');</div>
+            </div>
+        </div>
+
+        <!-- Slide 9: Consultas Básicas (solo enunciados) -->
+        <div class="slide">
+            <h2>🔍 Consultas Básicas + JOIN</h2>
+            <div class="content">
+                <h3>1️⃣ Mostrar todos los libros:</h3>
+
+                <h3>2️⃣ Mostrar libros con su autor:</h3>
+
+               
+            </div>
+        </div>
+        <div class="slide">
+            <h2>🔍 Consultas Básicas + JOIN</h2>
+            <div class="content">
+                <h3>1️⃣ Mostrar todos los libros:</h3>
+                <div class="code-block">SELECT * FROM libros;</div>
+
+                <h3>2️⃣ Mostrar libros con su autor:</h3>
+                <div class="code-block">SELECT libros.titulo, autores.nombre_autor 
+FROM libros 
+<br>JOIN autores ON libros.id_autor = autores.id_autor;</div>
+
+              
+            </div>
+        </div>
+         <!-- Slide 10: Consultas Básicas (solo enunciados) -->
+        <div class="slide">
+            <h2>🔍 Consultas Básicas + JOIN</h2>
+            <div class="content">
+               
+                <h3>3️⃣ Mostrar libros prestados,publicados antes del 1950:</h3>
+
+                <h3>4️⃣ Mostrar préstamos por usuario:</h3>
+            </div>
+        </div>
+
+       
+        
+         <!-- Slide 10: Consultas con Código Completo -->
+        <div class="slide">
+            <h2>🔍 Consultas Básicas + JOIN</h2>
+            <div class="content">
+              
+
+                <h3>3️⃣ Mostrar libros prestados,publicados antes del 1950:</h3>
+                <div class="code-block">SELECT u.nombre, l.titulo, p.fecha_prestamo 
+FROM prestamos p 
+<br>JOIN usuarios u ON p.id_usuario = u.id_usuario 
+<br>JOIN libros l ON p.id_libro = l.id_libro 
+<br>WHERE l.año_publicacion < 1950;</div>
+
+                <h3>4️⃣ Mostrar préstamos por usuario:</h3>
+                <div class="code-block">SELECT u.nombre, COUNT(*) AS total_prestamos 
+FROM prestamos p 
+<br>JOIN usuarios u ON p.id_usuario = u.id_usuario 
+<br>GROUP BY u.nombre;</div>
+            </div>
+        </div>
+
+        <!-- Slide 11: Cierre -->
+        <div class="slide">
+            <div class="content" style="height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;">
+                <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 50px; border-radius: 25px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); margin-bottom: 40px; animation: questionPulse 2s ease-in-out infinite;">
+                    <h2 style="font-size: 3.5em; margin-bottom: 20px; color: white; border: none; text-shadow: 2px 2px 4px rgba(0,0,0,0.3);">
+                        ❓ ¿Preguntas? ❓
+                    </h2>
+                    <p style="font-size: 1.8em; margin: 0; opacity: 0.9;">
+                        ¡No duden en preguntar! 🙋‍♀️🙋‍♂️
+                    </p>
+                </div>
+                
+                <div style="background: linear-gradient(135deg, #48bb78 0%, #38a169 100%); color: white; padding: 35px 50px; border-radius: 50px; box-shadow: 0 15px 30px rgba(72,187,120,0.3); animation: practiceBounce 1.8s ease-in-out infinite alternate;">
+                    <h3 style="font-size: 2.2em; margin: 0; color: white; text-shadow: 1px 1px 2px rgba(0,0,0,0.2);">
+                        🚀 ¡Es hora de practicar! 🚀
+                    </h3>
+                    <p style="font-size: 1.4em; margin-top: 15px; opacity: 0.9;">
+                        ¡Manos a la obra con SQL! 💻✨
+                    </p>
+                </div>
+                
+                <div style="margin-top: 40px; display: flex; gap: 30px; font-size: 3em; animation: iconsFloat 3s ease-in-out infinite;">
+                    <span style="animation: iconRotate1 4s ease-in-out infinite;">🎯</span>
+                    <span style="animation: iconRotate2 4s ease-in-out infinite;">📊</span>
+                    <span style="animation: iconRotate1 4s ease-in-out infinite;">🏆</span>
+                </div>
+                
+                <div style="margin-top: 30px; font-size: 1.5em; color: #667eea; font-weight: bold; animation: thankYou 2.5s ease-in-out infinite;">
+                    💝 ¡Gracias por participar! 💝
+                </div>
+            </div>
+        </div>
+
+        <style>
+            @keyframes questionPulse {
+                0%, 100% { transform: scale(1); box-shadow: 0 20px 40px rgba(0,0,0,0.15); }
+                50% { transform: scale(1.02); box-shadow: 0 25px 50px rgba(102,126,234,0.2); }
+            }
+            
+            @keyframes practiceBounce {
+                0% { transform: translateY(0px) scale(1); }
+                100% { transform: translateY(-8px) scale(1.03); }
+            }
+            
+            @keyframes iconsFloat {
+                0%, 100% { transform: translateY(0px); }
+                50% { transform: translateY(-15px); }
+            }
+            
+            @keyframes iconRotate1 {
+                0%, 100% { transform: rotate(0deg); }
+                25% { transform: rotate(10deg); }
+                75% { transform: rotate(-10deg); }
+            }
+            
+            @keyframes iconRotate2 {
+                0%, 100% { transform: rotate(0deg); }
+                25% { transform: rotate(-10deg); }
+                75% { transform: rotate(10deg); }
+            }
+            
+            @keyframes thankYou {
+                0%, 100% { opacity: 1; color: #667eea; }
+                50% { opacity: 0.8; color: #764ba2; }
+            }
+        </style>
+    </div>
+
+    <div class="slide-counter">
+        <span id="current-slide">1</span> / <span id="total-slides">15</span>
+    </div>
+
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" onclick="previousSlide()">← Anterior</button>
+        <button class="nav-btn" id="next-btn" onclick="nextSlide()">Siguiente →</button>
+    </div>
+
+    <script>
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.slide');
+        const totalSlides = slides.length;
+        
+        document.getElementById('total-slides').textContent = totalSlides;
+
+        function showSlide(n) {
+            slides[currentSlide].classList.remove('active');
+            currentSlide = (n + totalSlides) % totalSlides;
+            slides[currentSlide].classList.add('active');
+            
+            document.getElementById('current-slide').textContent = currentSlide + 1;
+            
+            // Update navigation buttons
+            document.getElementById('prev-btn').disabled = currentSlide === 0;
+            document.getElementById('next-btn').disabled = currentSlide === totalSlides - 1;
+        }
+
+        function nextSlide() {
+            if (currentSlide < totalSlides - 1) {
+                showSlide(currentSlide + 1);
+            }
+        }
+
+        function previousSlide() {
+            if (currentSlide > 0) {
+                showSlide(currentSlide - 1);
+            }
+        }
+
+        // Keyboard navigation
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'ArrowRight' || e.key === ' ') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                previousSlide();
+            }
+        });
+
+        // Initialize
+        showSlide(0);
+    </script>
+</body>
+</html>
