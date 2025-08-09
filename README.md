@@ -251,7 +251,7 @@ CREATE TABLE → INSERT → SELECT → JOIN → GROUP BY
 
 ### 🎓 **¡Prepárate para una aventura SQL increíble!** 
 
-### 👨‍💻 **Instructores: Maxi & Keila** 👩‍💻
+### 👨‍💻 **Instructores: [@maxioru](https://github.com/MaxiOru/MaxiOru) & Keila** 👩‍💻
 
 ![GitHub stars](https://img.shields.io/github/stars/tu-usuario/taller-sql-biblioteca?style=social)
 ![GitHub forks](https://img.shields.io/github/forks/tu-usuario/taller-sql-biblioteca?style=social)
